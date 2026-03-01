@@ -1,0 +1,11 @@
+version: '3.8'
+
+services:
+  app:
+    build: .
+    volumes:
+      - .:/app
+    entrypoint: ["python", "cli.py"]
+    # Allow passing args from `docker-compose run app ...`
+    environment:
+      - PYTHONUNBUFFERED=1
