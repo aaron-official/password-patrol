@@ -165,12 +165,7 @@ The `checker.py` engine runs 8 distinct checks to calculate a "Strength Score".
 ---
 
 ## 🤝 Contributing
-Contributions are welcome! Please ensure any new features maintain the **Zero-Knowledge** architecture.
-1. Fork the repo.
-2. Create your feature branch (`git checkout -b feature/AmazingFeature`).
-3. Commit your changes (`git commit -m 'Add some AmazingFeature'`).
-4. Push to the branch (`git push origin feature/AmazingFeature`).
-5. Open a Pull Request.
+See [CONTRIBUTING.md](CONTRIBUTING.md) for development instructions, code style, and testing guidelines.
 
 ## 📄 License
 Distributed under the MIT License. See `LICENSE` for more information.
