@@ -36,6 +36,9 @@ class PasswordChecker:
         self.session: Optional[aiohttp.ClientSession] = None
         if enable_logging:
             self._setup_logging()
+        else:
+            self.logger = logging.getLogger(__name__)
+            self.logger.addHandler(logging.NullHandler())
         colorama.init(autoreset=True)
 
     def _setup_logging(self) -> None:
