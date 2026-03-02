@@ -43,11 +43,12 @@ class PasswordChecker:
 
     def _setup_logging(self) -> None:
         log_format = "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+        from pathlib import Path
         logging.basicConfig(
             level=logging.INFO,
             format=log_format,
             handlers=[
-                logging.FileHandler('password_checker.log'),
+                logging.FileHandler(Path('password_checker.log')),
                 logging.StreamHandler(sys.stdout)
             ]
         )
