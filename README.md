@@ -68,6 +68,27 @@ python -m venv .venv
 pip install -r requirements.txt
 ```
 
+## 🐳 Docker Usage (Zero Install)
+
+Run the tool without installing Python or dependencies on your host machine.
+
+### Build the Image
+```bash
+docker-compose build
+```
+
+### Run Commands
+```bash
+# Interactive mode
+docker-compose run --rm app --interactive
+
+# Check specific passwords
+docker-compose run --rm app "password123"
+
+# Check a file (volume mapped)
+docker-compose run --rm app --file passwords.txt
+```
+
 ---
 
 ## 💻 Usage Scenarios

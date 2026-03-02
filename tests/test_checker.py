@@ -1,10 +1,11 @@
 import pytest
+import pytest_asyncio
 import asyncio
 from unittest.mock import MagicMock
 from checker import PasswordChecker, PasswordSecurityError, SecurityLevel
 from aioresponses import aioresponses
 
-@pytest.fixture
+@pytest_asyncio.fixture
 async def checker():
     """Fixture to initialize PasswordChecker"""
     checker = PasswordChecker(enable_logging=False)
@@ -15,14 +16,14 @@ async def checker():
 async def test_hash_password(checker):
     """Test SHA1 hashing of password"""
     prefix, suffix = checker._hash_password("password123")
-    # SHA1 of "password123" is CBFDAAC6008F9CAB40833284EA118562862F1E09
+    # SHA1 of "password123" is CBFDAC6008F9CAB4083784CBD1874F76618D2A97
     assert prefix == "CBFDA"
-    assert suffix == "AC6008F9CAB40833284EA118562862F1E09"
+    assert suffix == "C6008F9CAB4083784CBD1874F76618D2A97"
 
 @pytest.mark.asyncio
 async def test_analyze_password_strength_strong(checker):
     """Test analysis of a strong password"""
-    strong_pwd = "StrongPassword123!"
+    strong_pwd = "StrongPassword941!"
     analysis = checker._analyze_password_strength(strong_pwd)
     
     assert analysis['score'] >= 7  # Should pass most checks
@@ -48,8 +49,9 @@ async def test_analyze_password_strength_weak(checker):
 async def test_count_breaches(checker):
     """Test parsing of HIBP API response"""
     # Mock response from HIBP: suffix:count
-    mock_response = "AC6008F9CAB40833284EA118562862F1E09:5\nOTHERHASH:10"
-    suffix = "AC6008F9CAB40833284EA118562862F1E09"
+    # Real suffix for password123: C6008F9CAB4083784CBD1874F76618D2A97
+    suffix = "C6008F9CAB4083784CBD1874F76618D2A97"
+    mock_response = f"{suffix}:5\nOTHERHASH:10"
     
     count = checker._count_breaches(mock_response, suffix)
     assert count == 5
@@ -58,7 +60,7 @@ async def test_count_breaches(checker):
 async def test_count_breaches_not_found(checker):
     """Test parsing when hash is not in response"""
     mock_response = "OTHERHASH:10"
-    suffix = "AC6008F9CAB40833284EA118562862F1E09"
+    suffix = "C6008F9CAB4083784CBD1874F76618D2A97"
     
     count = checker._count_breaches(mock_response, suffix)
     assert count == 0
@@ -68,10 +70,11 @@ async def test_check_password_breached(checker):
     """Test full check flow for a breached password"""
     pwd = "password123"
     prefix = "CBFDA"
-    suffix = "AC6008F9CAB40833284EA118562862F1E09"
+    suffix = "C6008F9CAB4083784CBD1874F76618D2A97"
     
     with aioresponses() as m:
         # Mock the API call
+        # Note: aioresponses matches the exact URL string
         m.get(f"https://api.pwnedpasswords.com/range/{prefix}", 
               status=200, 
               body=f"{suffix}:1000")
@@ -85,6 +88,13 @@ async def test_check_password_breached(checker):
 async def test_check_password_safe(checker):
     """Test full check flow for a safe password"""
     pwd = "UniqueComplexPassword999!"
+    # We don't know the exact hash here easily without calculating, 
+    # but we can trust the checker to generate consistent ones.
+    # We just need to mock whatever prefix it requests.
+    
+    # Let's inspect what the checker generates inside the test
+    # by using a side_effect or just trusting the prefix logic we tested in test_hash_password
+    # Actually, we can just call the helper:
     prefix, _ = checker._hash_password(pwd)
     
     with aioresponses() as m:

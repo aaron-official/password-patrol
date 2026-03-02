@@ -36,15 +36,19 @@ class PasswordChecker:
         self.session: Optional[aiohttp.ClientSession] = None
         if enable_logging:
             self._setup_logging()
+        else:
+            self.logger = logging.getLogger(__name__)
+            self.logger.addHandler(logging.NullHandler())
         colorama.init(autoreset=True)
 
     def _setup_logging(self) -> None:
         log_format = "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+        from pathlib import Path
         logging.basicConfig(
             level=logging.INFO,
             format=log_format,
             handlers=[
-                logging.FileHandler('password_checker.log'),
+                logging.FileHandler(Path('password_checker.log')),
                 logging.StreamHandler(sys.stdout)
             ]
         )

@@ -26,15 +26,21 @@ jobs:
         python -m pip install --upgrade pip
         pip install -r requirements.txt
         pip install -r requirements-dev.txt
+        # My changes required pytest-asyncio
+        pip install pytest-asyncio
         
     - name: Run Linting (Ruff)
       run: |
+        # Assuming ruff is in requirements-dev.txt
         ruff check .
         
     - name: Run Type Checks (mypy)
       run: |
+        # Assuming mypy is in requirements-dev.txt
         mypy .
         
     - name: Run Tests
       run: |
-        pytest -v
+        # My change to set PYTHONPATH and run pytest
+        export PYTHONPATH=$PYTHONPATH:$(pwd)
+        pytest tests
